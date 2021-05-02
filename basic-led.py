@@ -30,6 +30,16 @@ def cycle(red, green, blue):
     red.on()
     green.off()
     blue.off()
+    
+def handleLedUpdate(mode, modes, firstIteration, red, green, blue):
+  currentPosition = mode % len(modes)
+  currentMode = modes[currentPosition]
+  if firstIteration:
+    currentMode(red, green, blue)
+  else:
+    if currentMode == cycle:
+      currentMode(red, green, blue)
+  return False
 
 def run():
   print('starting...')
@@ -40,16 +50,21 @@ def run():
   lb = Button(16)
   rb = Button(12)
 
+  firstIteration = True
   mode = 0
   modes = [off, on, blink, cycle]
+
   
   print('listening for input...')
   while True:
-    modes[mode % len(modes)](red, green, blue)
+
+    firstIteration = handleLedUpdate(mode, modes, firstIteration, red, green, blue)
+    
     if lb.is_pressed:
       print('updating mode')
       off(red, green, blue)
       mode = mode + 1
+      firstIteration = True
       print('mode set to ' + str(mode % len(modes)))
       sleep(.25)
       print('listening for input...')
