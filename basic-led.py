@@ -26,6 +26,10 @@ def cycle(red, green, blue):
   elif blue.is_lit:
     blue.off()
     red.on()
+  else:
+    red.on()
+    green.off()
+    blue.off()
 
 def run():
   print('starting...')
@@ -36,22 +40,24 @@ def run():
   lb = Button(16)
   rb = Button(12)
 
-  currentMode = 0
-  modes = [on, blink, cycle]
+  mode = 0
+  modes = [off, on, blink, cycle]
   
   print('listening for input...')
   while True:
-    modes[currentMode % len(modes)](red, green, blue)
+    modes[mode % len(modes)](red, green, blue)
     if lb.is_pressed:
       print('updating mode')
       off(red, green, blue)
       mode = mode + 1
+      print('mode set to ' + str(mode % len(modes)))
       sleep(.25)
       print('listening for input...')
       
     if rb.is_pressed:
       print('turning off lights')
       off(red, green, blue)
+      mode = 0
       print('listening for input...')
       
 run()
