@@ -11,10 +11,15 @@ def on(red, green, blue):
   green.on()
   blue.on()
 
+def blinkSync(red, green, blue):
+  red.blink(.5)
+  green.blink(.5)
+  blue.blink(.5)
+    
 def blink(red, green, blue):
-  red.blink()
-  green.blink()
-  blue.blink()
+  red.blink(.5)
+  green.blink(1)
+  blue.blink(1.5)
   
 def cycle(red, green, blue):
   if red.is_lit:
@@ -31,15 +36,15 @@ def cycle(red, green, blue):
     green.off()
     blue.off()
     
-def handleLedUpdate(mode, modes, firstIteration, red, green, blue):
+def handleLedUpdate(mode, modes, iteration, red, green, blue):
   currentPosition = mode % len(modes)
   currentMode = modes[currentPosition]
-  if firstIteration:
+  if iteration <= 0:
     currentMode(red, green, blue)
   else:
-    if currentMode == cycle:
+    if currentMode == cycle and iteration % 200 == 0:
       currentMode(red, green, blue)
-  return False
+  return iteration + 1
 
 def run():
   print('starting...')
@@ -50,21 +55,21 @@ def run():
   lb = Button(16)
   rb = Button(12)
 
-  firstIteration = True
+  iteration = 0
   mode = 0
-  modes = [off, on, blink, cycle]
+  modes = [off, on, blinkSync, blink, cycle]
 
   
   print('listening for input...')
   while True:
 
-    firstIteration = handleLedUpdate(mode, modes, firstIteration, red, green, blue)
+    iteration = handleLedUpdate(mode, modes, iteration, red, green, blue)
     
     if lb.is_pressed:
       print('updating mode')
       off(red, green, blue)
       mode = mode + 1
-      firstIteration = True
+      iteration = 0
       print('mode set to ' + str(mode % len(modes)))
       sleep(.25)
       print('listening for input...')
